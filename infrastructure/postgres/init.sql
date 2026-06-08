@@ -1,0 +1,8 @@
+CREATE DATABASE airflow_db;
+GRANT ALL PRIVILEGES ON DATABASE airflow_db TO transit_user;
+
+\c transit_db;
+
+CREATE SCHEMA IF NOT EXISTS raw;
+CREATE SCHEMA IF NOT EXISTS staging;
+CREATE SCHEMA IF NOT EXISTS marts;
