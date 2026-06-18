@@ -227,3 +227,4 @@ venv/
 .DS_Store
 logs/
 data/raw/
+.sfdx
