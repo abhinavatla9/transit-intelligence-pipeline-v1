@@ -32,11 +32,13 @@ services:
       - minio_data:/data
   spark:
     image: apache/spark:3.5.0
+    command: /opt/spark/bin/spark-class org.apache.spark.deploy.master.Master
     environment: 
       SPARK_MODE: master
+      SPARK_MASTER_WEBUI_PORT: 8082
     ports:
       - "7077:7077"
-      - "8081:8081"
+      - "8082:8082"
     volumes:
       - ./processing:/opt/spark/processing
   postgres:

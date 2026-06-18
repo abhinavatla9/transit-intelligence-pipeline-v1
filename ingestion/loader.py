@@ -27,7 +27,7 @@ def check_bucket_exists (client, bucket_name: str):
     try:
         client.head_bucket(Bucket=bucket_name)
         logger.info(f"bucker {bucket_name} already exists")
-    except:
+    except ClientError:
         client.create_bucket(Bucket=bucket_name)
         logger.info(f"bucket {bucket_name} successfully created")
 
@@ -43,7 +43,23 @@ def load_to_bronze(feed: gtfs_realtime_pb2, feed_type: str):
 
     entities = []
     for entity in feed.entity:
-        entities.append(str(entity))
+        trip = entity.trip_update.trip
+        vehicle = entity.trip_update.vehicle
+        timestamp = entity.trip_update.timestamp
+
+        for stop_update in entity.trip_update.stop_time_update:
+            entities.append({
+                "trip_id": trip.trip_id,
+                "route_id": trip.route_id,
+                "direction_id": trip.direction_id,
+                "vehicle_id": vehicle.id,
+                "vehicle_label": vehicle.label,
+                "stop_id": stop_update.stop_id,
+                "arrival_delay": stop_update.arrival.delay if stop_update.HasField("arrival") else None,
+                "departure_delay": stop_update.departure.delay if stop_update.HasField("departure") else None,
+                "timestamp": timestamp
+            })
+
     
     payload = {
         "ingested_at": datetime.now().isoformat(),
